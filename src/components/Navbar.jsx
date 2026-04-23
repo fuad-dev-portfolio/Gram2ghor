@@ -48,7 +48,7 @@ export default async function Navbar() {
 
                     {/* Navigation Links */}
                     <div className="hidden md:flex space-x-6 lg:space-x-8 items-center">
-                        <Link href="/home" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                        <Link href="/" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
                             Home
                         </Link>
 
