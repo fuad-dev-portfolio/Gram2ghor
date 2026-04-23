@@ -1,4 +1,4 @@
-export default function AacharPage() {
+export default function DatesPage() {
     return (
         <div>
             <h1>Dates page is under development</h1>
