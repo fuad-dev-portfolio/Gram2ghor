@@ -23,12 +23,24 @@ export default function CheckoutPage() {
         return guestId;
     };
     
+    const deliveryCharges = {
+        inside_dhaka: 70,
+        outside_dhaka: 100,
+        outside_bangladesh: 130
+    };
+
+    const deliveryLabels = {
+        inside_dhaka: 'Inside Dhaka',
+        outside_dhaka: 'Outside Dhaka',
+        outside_bangladesh: 'Outside Bangladesh'
+    };
+    
     const [formData, setFormData] = useState({
         customerName: '',
         customerPhone: '',
         customerEmail: '',
         shippingAddress: '',
-        city: '',
+        deliveryArea: 'inside_dhaka',
         paymentMethod: 'cash_on_delivery',
         notes: ''
     });
@@ -73,12 +85,10 @@ export default function CheckoutPage() {
                 body: JSON.stringify(formData)
             });
             const data = await res.json();
-            console.log('Order response:', data);
 
             if (data.success) {
                 setOrderPlaced(true);
                 setOrderData(data.data);
-                // Clear cart from localStorage after order
                 localStorage.removeItem('guestId');
             } else {
                 alert(data.message || 'Failed to place order');
@@ -90,6 +100,8 @@ export default function CheckoutPage() {
         }
     };
 
+    const totalAmount = (cart?.totalAmount || 0) + deliveryCharges[formData.deliveryArea];
+
     if (orderPlaced && orderData) {
         return (
             <div className="w-full py-12 flex flex-col items-center justify-center">
@@ -98,15 +110,12 @@ export default function CheckoutPage() {
                 </div>
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h1>
                 <p className="text-gray-600 mb-4">Your Order ID: <span className="font-bold">{orderData.orderId}</span></p>
-                <p className="text-gray-500 mb-6">We'll send you a confirmation via SMS/Email.</p>
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => router.push('/')}
-                        className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700"
-                    >
-                        Continue Shopping
-                    </button>
-                </div>
+                <button
+                    onClick={() => router.push('/')}
+                    className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700"
+                >
+                    Continue Shopping
+                </button>
             </div>
         );
     }
@@ -161,7 +170,7 @@ export default function CheckoutPage() {
                                         value={formData.customerName}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                         placeholder="Your full name"
                                     />
                                 </div>
@@ -173,7 +182,7 @@ export default function CheckoutPage() {
                                         value={formData.customerPhone}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                         placeholder="01XXXXXXXXX"
                                     />
                                 </div>
@@ -184,9 +193,22 @@ export default function CheckoutPage() {
                                         name="customerEmail"
                                         value={formData.customerEmail}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                         placeholder="your@email.com"
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Shipping Area</label>
+                                    <select
+                                        name="deliveryArea"
+                                        value={formData.deliveryArea}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                    >
+                                        <option value="inside_dhaka">Inside Dhaka (70৳)</option>
+                                        <option value="outside_dhaka">Outside Dhaka (100৳)</option>
+                                        <option value="outside_bangladesh">Outside Bangladesh (130৳)</option>
+                                    </select>
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address *</label>
@@ -196,19 +218,8 @@ export default function CheckoutPage() {
                                         onChange={handleChange}
                                         required
                                         rows={3}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                         placeholder="Full delivery address"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                                        placeholder="Dhaka"
                                     />
                                 </div>
                             </div>
@@ -219,7 +230,7 @@ export default function CheckoutPage() {
                             disabled={placingOrder}
                             className="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
                         >
-                            {placingOrder ? 'Placing Order...' : `Place Order - ৳${cart?.totalAmount || 0}`}
+                            {placingOrder ? 'Placing Order...' : `Place Order - ৳${totalAmount}`}
                         </button>
                     </form>
                 </div>
@@ -232,15 +243,9 @@ export default function CheckoutPage() {
                                 <div key={item._id} className="flex gap-3">
                                     <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                         {item.productImage ? (
-                                            <img
-                                                src={item.productImage}
-                                                alt={item.productName}
-                                                className="w-full h-full object-cover"
-                                            />
+                                            <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                                                No Image
-                                            </div>
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
                                         )}
                                     </div>
                                     <div className="flex-1">
@@ -257,12 +262,12 @@ export default function CheckoutPage() {
                                 <span>৳{cart?.totalAmount || 0}</span>
                             </div>
                             <div className="flex justify-between text-gray-600">
-                                <span>Delivery</span>
-                                <span>Free</span>
+                                <span>Shipping ({deliveryLabels[formData.deliveryArea]})</span>
+                                <span>৳{deliveryCharges[formData.deliveryArea]}</span>
                             </div>
                             <div className="flex justify-between font-bold text-gray-800 text-lg">
                                 <span>Total</span>
-                                <span>৳{cart?.totalAmount || 0}</span>
+                                <span>৳{totalAmount}</span>
                             </div>
                         </div>
                     </div>
