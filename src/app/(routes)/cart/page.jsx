@@ -204,8 +204,8 @@ export default function CartPage() {
                             <span>৳{cart?.totalAmount || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span>Delivery</span>
-                            <span>Free</span>
+                            <span>Shipping</span>
+                            <span>To be calculated at checkout</span>
                         </div>
                         <div className="border-t pt-2 flex justify-between font-bold text-gray-800">
                             <span>Total</span>
