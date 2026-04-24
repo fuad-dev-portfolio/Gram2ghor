@@ -78,7 +78,9 @@ export default function NewArraivals() {
     return (
         <div className="w-full py-8 px-4">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">New Arrivals</h2>
+                <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-800 text-center">New Arrivals</h2>
+                </div>
                 <div className="flex gap-2">
                     <button
                         onClick={goToPrev}
