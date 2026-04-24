@@ -79,7 +79,7 @@ export default async function Navbar() {
                             </div>
                         </div>
 
-                        <Link href="/ghee & oil" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                        <Link href="/ghee-oil" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
                             Ghee & Oil
                         </Link>
                         <Link href="/gura-mosla" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
@@ -88,7 +88,7 @@ export default async function Navbar() {
                         <Link href="/aachar" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
                             Aachar
                         </Link>
-                        <Link href="/honey & sweets" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                        <Link href="/honey-sweets" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
                             Honey & Sweets
                         </Link>
                     </div>
