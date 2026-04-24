@@ -77,6 +77,8 @@ export default function ProductClient({ productId }) {
             if (data.success) {
                 setAdded(true);
                 setTimeout(() => setAdded(false), 2000);
+                // Notify navbar to update cart count
+                window.dispatchEvent(new Event('cart-updated'));
             } else {
                 alert(data.message || 'Failed to add to cart');
             }

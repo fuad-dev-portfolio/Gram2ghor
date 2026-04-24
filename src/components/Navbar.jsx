@@ -1,28 +1,60 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { FiSearch, FiShoppingCart, FiChevronDown, FiTruck } from "react-icons/fi";
 
-const fetchCategories = async () => {
-    try {
-        const backendUrl = process.env.GRAM2GHOR_BACKEND_URL;
-        if (!backendUrl) return [];
+function Navbar() {
+    const [categories, setCategories] = useState([]);
+    const [cartCount, setCartCount] = useState(0);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
-        // Fetch categories and revalidate cache every 60 seconds
-        const res = await fetch(`${backendUrl}/api/admin/category/get-all-category`, {
-            next: { revalidate: 60 }
-        });
+    useEffect(() => {
+        fetchCategories();
+        fetchCartCount();
 
-        if (!res.ok) return [];
-        const result = await res.json();
-        return result.data || [];
-    } catch (error) {
-        console.error("Failed to fetch categories", error);
-        return [];
-    }
-};
+        // Listen for cart updates
+        const handleCartUpdate = () => fetchCartCount();
+        window.addEventListener('cart-updated', handleCartUpdate);
+        return () => window.removeEventListener('cart-updated', handleCartUpdate);
+    }, []);
 
-export default async function Navbar() {
-    const categories = await fetchCategories();
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch(`${backendUrl}/api/admin/category/get-all-category`);
+            const data = await res.json();
+            if (data.success) {
+                setCategories(data.data || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch categories", error);
+        }
+    };
+
+    const getGuestId = () => {
+        if (typeof window === 'undefined') return null;
+        let guestId = localStorage.getItem('guestId');
+        if (!guestId) {
+            guestId = `guest_${Date.now()}`;
+            localStorage.setItem('guestId', guestId);
+        }
+        return guestId;
+    };
+
+    const fetchCartCount = async () => {
+        try {
+            const guestId = getGuestId();
+            const res = await fetch(`${backendUrl}/api/client/cart/get`, {
+                headers: { 'guest-id': guestId }
+            });
+            const data = await res.json();
+            if (data.success && data.data) {
+                setCartCount(data.data.items?.length || 0);
+            }
+        } catch (error) {
+            console.error("Failed to fetch cart count", error);
+        }
+    };
 
     return (
         <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100">
@@ -115,10 +147,11 @@ export default async function Navbar() {
                             >
                                 <FiShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
                             </button>
-                            {/* Cart Item Badge */}
-                            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] sm:text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-emerald-600 rounded-full border-2 border-white">
-                                0
-                            </span>
+                            {cartCount > 0 && (
+                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] sm:text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-emerald-600 rounded-full border-2 border-white">
+                                    {cartCount}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 </div>
@@ -126,3 +159,5 @@ export default async function Navbar() {
         </nav>
     );
 }
+
+export default Navbar;
