@@ -12,6 +12,17 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+    const getGuestId = () => {
+        if (typeof window !== 'undefined') {
+            let guestId = localStorage.getItem('guestId');
+            if (!guestId) {
+                guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+                localStorage.setItem('guestId', guestId);
+            }
+            return guestId;
+        }
+        return null;
+    };
     const [formData, setFormData] = useState({
         customerName: '',
         customerPhone: '',
@@ -28,7 +39,9 @@ export default function CheckoutPage() {
 
     const fetchCart = async () => {
         try {
+            const guestId = getGuestId();
             const res = await fetch(`${backendUrl}/api/client/cart/get`, {
+                headers: { 'guest-id': guestId },
                 credentials: 'include'
             });
             const data = await res.json();
@@ -51,9 +64,13 @@ export default function CheckoutPage() {
         setPlacingOrder(true);
 
         try {
+            const guestId = getGuestId();
             const res = await fetch(`${backendUrl}/api/client/order/create`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'guest-id': guestId
+                },
                 credentials: 'include',
                 body: JSON.stringify(formData)
             });

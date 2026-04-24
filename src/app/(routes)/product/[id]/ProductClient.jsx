@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FiShoppingCart, FiCheck } from "react-icons/fi";
+import { addToCart } from "@/utils/cart";
 
 export default function ProductClient({ productId }) {
     const [product, setProduct] = useState(null);
@@ -47,9 +48,19 @@ export default function ProductClient({ productId }) {
 
         setAdding(true);
         try {
+            // Ensure guestId exists
+            let guestId = localStorage.getItem('guestId');
+            if (!guestId) {
+                guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+                localStorage.setItem('guestId', guestId);
+            }
+
             const res = await fetch(`${backendUrl}/api/client/cart/add`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'guest-id': guestId
+                },
                 credentials: 'include',
                 body: JSON.stringify({
                     productId: product._id,

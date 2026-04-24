@@ -13,13 +13,27 @@ export default function CartPage() {
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
+    const getGuestId = () => {
+        if (typeof window !== 'undefined') {
+            let guestId = localStorage.getItem('guestId');
+            if (!guestId) {
+                guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+                localStorage.setItem('guestId', guestId);
+            }
+            return guestId;
+        }
+        return null;
+    };
+
     useEffect(() => {
         fetchCart();
     }, []);
 
     const fetchCart = async () => {
         try {
+            const guestId = getGuestId();
             const res = await fetch(`${backendUrl}/api/client/cart/get`, {
+                headers: { 'guest-id': guestId },
                 credentials: 'include'
             });
             const data = await res.json();
@@ -38,9 +52,13 @@ export default function CartPage() {
     const updateQuantity = async (itemId, quantity) => {
         setUpdating(true);
         try {
+            const guestId = localStorage.getItem('guestId');
             const res = await fetch(`${backendUrl}/api/client/cart/update`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'guest-id': guestId
+                },
                 credentials: 'include',
                 body: JSON.stringify({ itemId, quantity })
             });
@@ -58,8 +76,10 @@ export default function CartPage() {
     const removeItem = async (itemId) => {
         setUpdating(true);
         try {
+            const guestId = localStorage.getItem('guestId');
             const res = await fetch(`${backendUrl}/api/client/cart/remove/${itemId}`, {
                 method: 'DELETE',
+                headers: { 'guest-id': guestId },
                 credentials: 'include'
             });
             const data = await res.json();
