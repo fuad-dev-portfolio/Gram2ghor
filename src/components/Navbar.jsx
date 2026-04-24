@@ -79,10 +79,10 @@ export default async function Navbar() {
                             </div>
                         </div>
 
-                        <Link href="/ghee-&-oil" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                        <Link href="/ghee-oil-new" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
                             Ghee & Oil
                         </Link>
-                        <Link href="/honey-&-sweet" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                        <Link href="/honey-sweets-new" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
                             Honey & Sweets
                         </Link>
                     </div>
