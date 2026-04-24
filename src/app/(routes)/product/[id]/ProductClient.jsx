@@ -48,12 +48,14 @@ export default function ProductClient({ productId }) {
 
         setAdding(true);
         try {
-            // Ensure guestId exists
-            let guestId = localStorage.getItem('guestId');
-            if (!guestId) {
-                guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-                localStorage.setItem('guestId', guestId);
-            }
+            const guestId = (() => {
+                let id = localStorage.getItem('guestId');
+                if (!id) {
+                    id = `guest_${Date.now()}`;
+                    localStorage.setItem('guestId', id);
+                }
+                return id;
+            })();
 
             const res = await fetch(`${backendUrl}/api/client/cart/add`, {
                 method: 'POST',
@@ -61,7 +63,6 @@ export default function ProductClient({ productId }) {
                     'Content-Type': 'application/json',
                     'guest-id': guestId
                 },
-                credentials: 'include',
                 body: JSON.stringify({
                     productId: product._id,
                     quantity: quantity,
@@ -70,6 +71,7 @@ export default function ProductClient({ productId }) {
                 })
             });
             const data = await res.json();
+            console.log('Add to cart response:', data);
 
             if (data.success) {
                 setAdded(true);
@@ -78,6 +80,7 @@ export default function ProductClient({ productId }) {
                 alert(data.message || 'Failed to add to cart');
             }
         } catch (err) {
+            console.error('Add to cart error:', err);
             alert('Failed to add to cart');
         } finally {
             setAdding(false);

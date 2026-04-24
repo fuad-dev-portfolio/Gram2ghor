@@ -8,21 +8,20 @@ export default function CartPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [updating, setUpdating] = useState(false);
-    const [placingOrder, setPlacingOrder] = useState(false);
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
+    // Get or create guestId
     const getGuestId = () => {
-        if (typeof window !== 'undefined') {
-            let guestId = localStorage.getItem('guestId');
-            if (!guestId) {
-                guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-                localStorage.setItem('guestId', guestId);
-            }
-            return guestId;
+        if (typeof window === 'undefined') return null;
+        
+        let guestId = localStorage.getItem('guestId');
+        if (!guestId) {
+            guestId = `guest_${Date.now()}`;
+            localStorage.setItem('guestId', guestId);
         }
-        return null;
+        return guestId;
     };
 
     useEffect(() => {
@@ -32,18 +31,26 @@ export default function CartPage() {
     const fetchCart = async () => {
         try {
             const guestId = getGuestId();
+            console.log('Fetching cart with guestId:', guestId);
+            
             const res = await fetch(`${backendUrl}/api/client/cart/get`, {
-                headers: { 'guest-id': guestId },
-                credentials: 'include'
+                headers: { 
+                    'guest-id': guestId,
+                    'Content-Type': 'application/json'
+                }
             });
+            
             const data = await res.json();
+            console.log('Cart response:', data);
+            
             if (data.success) {
                 setCart(data.data);
             } else {
-                setError(data.message);
+                setError(data.message || 'Failed to load cart');
             }
         } catch (err) {
-            setError("Failed to load cart");
+            console.error('Fetch cart error:', err);
+            setError("Failed to load cart: " + err.message);
         } finally {
             setLoading(false);
         }
@@ -52,14 +59,13 @@ export default function CartPage() {
     const updateQuantity = async (itemId, quantity) => {
         setUpdating(true);
         try {
-            const guestId = localStorage.getItem('guestId');
+            const guestId = getGuestId();
             const res = await fetch(`${backendUrl}/api/client/cart/update`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
                     'guest-id': guestId
                 },
-                credentials: 'include',
                 body: JSON.stringify({ itemId, quantity })
             });
             const data = await res.json();
@@ -76,11 +82,10 @@ export default function CartPage() {
     const removeItem = async (itemId) => {
         setUpdating(true);
         try {
-            const guestId = localStorage.getItem('guestId');
+            const guestId = getGuestId();
             const res = await fetch(`${backendUrl}/api/client/cart/remove/${itemId}`, {
                 method: 'DELETE',
-                headers: { 'guest-id': guestId },
-                credentials: 'include'
+                headers: { 'guest-id': guestId }
             });
             const data = await res.json();
             if (data.success) {
@@ -109,7 +114,9 @@ export default function CartPage() {
         );
     }
 
-    if (!cart || cart.items.length === 0) {
+    const items = cart?.items || [];
+    
+    if (items.length === 0) {
         return (
             <div className="w-full py-20 flex flex-col items-center justify-center">
                 <FiShoppingCart className="w-16 h-16 text-gray-300 mb-4" />
@@ -129,12 +136,12 @@ export default function CartPage() {
         <div className="w-full py-8">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Shopping Cart</h1>
-                <span className="text-gray-500">{cart.items.length} items</span>
+                <span className="text-gray-500">{items.length} items</span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-4">
-                    {cart.items.map((item) => (
+                    {items.map((item) => (
                         <div key={item._id} className="bg-white border rounded-lg p-4 flex gap-4">
                             <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                 {item.product?.cover_image ? (
@@ -194,7 +201,7 @@ export default function CartPage() {
                     <div className="space-y-2 text-gray-600">
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span>৳{cart.totalAmount}</span>
+                            <span>৳{cart?.totalAmount || 0}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Delivery</span>
@@ -202,7 +209,7 @@ export default function CartPage() {
                         </div>
                         <div className="border-t pt-2 flex justify-between font-bold text-gray-800">
                             <span>Total</span>
-                            <span>৳{cart.totalAmount}</span>
+                            <span>৳{cart?.totalAmount || 0}</span>
                         </div>
                     </div>
                     <button

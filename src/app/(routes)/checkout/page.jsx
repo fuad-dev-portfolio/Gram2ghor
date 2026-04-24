@@ -12,17 +12,17 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+    
     const getGuestId = () => {
-        if (typeof window !== 'undefined') {
-            let guestId = localStorage.getItem('guestId');
-            if (!guestId) {
-                guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-                localStorage.setItem('guestId', guestId);
-            }
-            return guestId;
+        if (typeof window === 'undefined') return null;
+        let guestId = localStorage.getItem('guestId');
+        if (!guestId) {
+            guestId = `guest_${Date.now()}`;
+            localStorage.setItem('guestId', guestId);
         }
-        return null;
+        return guestId;
     };
+    
     const [formData, setFormData] = useState({
         customerName: '',
         customerPhone: '',
@@ -41,8 +41,7 @@ export default function CheckoutPage() {
         try {
             const guestId = getGuestId();
             const res = await fetch(`${backendUrl}/api/client/cart/get`, {
-                headers: { 'guest-id': guestId },
-                credentials: 'include'
+                headers: { 'guest-id': guestId }
             });
             const data = await res.json();
             if (data.success) {
@@ -71,14 +70,16 @@ export default function CheckoutPage() {
                     'Content-Type': 'application/json',
                     'guest-id': guestId
                 },
-                credentials: 'include',
                 body: JSON.stringify(formData)
             });
             const data = await res.json();
+            console.log('Order response:', data);
 
             if (data.success) {
                 setOrderPlaced(true);
                 setOrderData(data.data);
+                // Clear cart from localStorage after order
+                localStorage.removeItem('guestId');
             } else {
                 alert(data.message || 'Failed to place order');
             }
@@ -105,12 +106,6 @@ export default function CheckoutPage() {
                     >
                         Continue Shopping
                     </button>
-                    <button
-                        onClick={() => router.push(`/track-order?orderId=${orderData.orderId}`)}
-                        className="border border-emerald-600 text-emerald-600 px-6 py-2 rounded-lg hover:bg-emerald-50"
-                    >
-                        Track Order
-                    </button>
                 </div>
             </div>
         );
@@ -124,7 +119,9 @@ export default function CheckoutPage() {
         );
     }
 
-    if (!cart || cart.items.length === 0) {
+    const items = cart?.items || [];
+    
+    if (items.length === 0) {
         return (
             <div className="w-full py-20 flex flex-col items-center justify-center">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h2>
@@ -214,35 +211,6 @@ export default function CheckoutPage() {
                                         placeholder="Dhaka"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Order Notes (Optional)</label>
-                                    <input
-                                        type="text"
-                                        name="notes"
-                                        value={formData.notes}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                                        placeholder="Any special instructions..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white border rounded-lg p-6">
-                            <h2 className="text-lg font-bold text-gray-800 mb-4">Payment Method</h2>
-                            <div className="space-y-3">
-                                <label className="flex items-center gap-3 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="paymentMethod"
-                                        value="cash_on_delivery"
-                                        checked={formData.paymentMethod === 'cash_on_delivery'}
-                                        onChange={handleChange}
-                                        className="w-4 h-4 text-emerald-600"
-                                    />
-                                    <span>Cash on Delivery</span>
-                                </label>
-                                <p className="text-sm text-gray-500 ml-7">Pay when you receive your order</p>
                             </div>
                         </div>
 
@@ -251,7 +219,7 @@ export default function CheckoutPage() {
                             disabled={placingOrder}
                             className="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
                         >
-                            {placingOrder ? 'Placing Order...' : `Place Order - ৳${cart.totalAmount}`}
+                            {placingOrder ? 'Placing Order...' : `Place Order - ৳${cart?.totalAmount || 0}`}
                         </button>
                     </form>
                 </div>
@@ -260,7 +228,7 @@ export default function CheckoutPage() {
                     <div className="bg-white border rounded-lg p-6 sticky top-24">
                         <h2 className="text-lg font-bold text-gray-800 mb-4">Order Summary</h2>
                         <div className="space-y-3 max-h-80 overflow-y-auto">
-                            {cart.items.map((item) => (
+                            {items.map((item) => (
                                 <div key={item._id} className="flex gap-3">
                                     <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                         {item.product?.cover_image ? (
@@ -286,7 +254,7 @@ export default function CheckoutPage() {
                         <div className="border-t mt-4 pt-4 space-y-2">
                             <div className="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span>৳{cart.totalAmount}</span>
+                                <span>৳{cart?.totalAmount || 0}</span>
                             </div>
                             <div className="flex justify-between text-gray-600">
                                 <span>Delivery</span>
@@ -294,7 +262,7 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex justify-between font-bold text-gray-800 text-lg">
                                 <span>Total</span>
-                                <span>৳{cart.totalAmount}</span>
+                                <span>৳{cart?.totalAmount || 0}</span>
                             </div>
                         </div>
                     </div>
