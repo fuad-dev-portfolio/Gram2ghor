@@ -144,10 +144,10 @@ export default function CartPage() {
                     {items.map((item) => (
                         <div key={item._id} className="bg-white border rounded-lg p-4 flex gap-4">
                             <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                {item.product?.cover_image ? (
+                                {item.productImage ? (
                                     <img
-                                        src={item.product.cover_image}
-                                        alt={item.product.firstName}
+                                        src={item.productImage}
+                                        alt={item.productName}
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
@@ -157,7 +157,7 @@ export default function CartPage() {
                                 )}
                             </div>
                             <div className="flex-1">
-                                <h3 className="font-semibold text-gray-800">{item.product?.firstName}</h3>
+                                <h3 className="font-semibold text-gray-800">{item.productName}</h3>
                                 {item.weight && (
                                     <p className="text-sm text-gray-500">{item.weight}</p>
                                 )}

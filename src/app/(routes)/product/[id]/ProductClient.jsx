@@ -65,13 +65,14 @@ export default function ProductClient({ productId }) {
                 },
                 body: JSON.stringify({
                     productId: product._id,
+                    productName: product.firstName,
+                    productImage: product.cover_image,
                     quantity: quantity,
                     weight: product.weights[selectedWeight].weight,
                     price: product.weights[selectedWeight].price
                 })
             });
             const data = await res.json();
-            console.log('Add to cart response:', data);
 
             if (data.success) {
                 setAdded(true);
@@ -80,7 +81,6 @@ export default function ProductClient({ productId }) {
                 alert(data.message || 'Failed to add to cart');
             }
         } catch (err) {
-            console.error('Add to cart error:', err);
             alert('Failed to add to cart');
         } finally {
             setAdding(false);
