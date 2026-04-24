@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { FiShoppingCart, FiCheck } from "react-icons/fi";
 
 export default function ProductClient({ productId }) {
     const [product, setProduct] = useState(null);
@@ -8,6 +10,9 @@ export default function ProductClient({ productId }) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedWeight, setSelectedWeight] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [adding, setAdding] = useState(false);
+    const [added, setAdded] = useState(false);
+    const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
@@ -37,13 +42,39 @@ export default function ProductClient({ productId }) {
         }
     }, [productId, backendUrl]);
 
-    const addToCart = () => {
-        if (!product) return;
-        console.log("Added to cart:", {
-            productId: product._id,
-            weight: product.weights[selectedWeight],
-            quantity
-        });
+    const handleAddToCart = async () => {
+        if (!product || !product.weights[selectedWeight]) return;
+
+        setAdding(true);
+        try {
+            const res = await fetch(`${backendUrl}/api/client/cart/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    productId: product._id,
+                    quantity: quantity,
+                    weight: product.weights[selectedWeight].weight,
+                    price: product.weights[selectedWeight].price
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                setAdded(true);
+                setTimeout(() => setAdded(false), 2000);
+            } else {
+                alert(data.message || 'Failed to add to cart');
+            }
+        } catch (err) {
+            alert('Failed to add to cart');
+        } finally {
+            setAdding(false);
+        }
+    };
+
+    const goToCart = () => {
+        router.push('/cart');
     };
 
     if (loading) {
@@ -193,11 +224,11 @@ export default function ProductClient({ productId }) {
                     </div>
 
                     <button
-                        onClick={addToCart}
-                        disabled={!currentWeight?.stock}
-                        className="mt-6 w-full bg-emerald-600 text-white font-medium py-3 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={added ? goToCart : handleAddToCart}
+                        disabled={adding || !currentWeight?.stock}
+                        className="mt-6 w-full bg-emerald-600 text-white font-medium py-3 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
-                        {currentWeight?.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                        {adding ? 'Adding...' : added ? <><FiCheck className="w-5 h-5" /> Added - Go to Cart</> : currentWeight?.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                     </button>
 
                     {product.description && (

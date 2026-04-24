@@ -108,7 +108,7 @@ export default async function Navbar() {
                         </Link>
 
                         {/* Cart Button */}
-                        <div className="relative">
+                        <Link href="/cart" className="relative">
                             <button
                                 className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                                 aria-label="Cart"
@@ -119,7 +119,7 @@ export default async function Navbar() {
                             <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] sm:text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-emerald-600 rounded-full border-2 border-white">
                                 0
                             </span>
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>
