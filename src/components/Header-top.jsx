@@ -1,39 +1,34 @@
-import { FaFacebookSquare } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
-import { FaInstagram } from "react-icons/fa";
-import { AiFillTikTok } from "react-icons/ai";
-import { CgMail } from "react-icons/cg";
+"use client";
 import { FaPhoneAlt } from "react-icons/fa";
-import { FaLinkedin } from "react-icons/fa";
 import { PiWhatsappLogoBold } from "react-icons/pi";
-
-
 
 export default function HeaderTop() {
     return (
-        <div className="flex justify-around bg-black p-1.5">
-            <div className="flex gap-5 text-white text-[12px] font-bold">
-                <p>আমাদের যে কোন পণ্য অর্ডার করতে Whatsapp করুন বা কল করুন</p>
-                <div className="flex gap-1">
-                    <FaPhoneAlt className="text-[16px] text-green-500" />
-                    <p>+8801711111111</p>
-                </div>
-                <p>|</p>
-                <div className="flex gap-1">
-                    <div className="flex gap-2">
-                        <PiWhatsappLogoBold className="text-[16px] text-green-500" />
-                        <p>+8801711111111</p>
+        <div className="bg-black">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-6 py-2 sm:py-1.5">
+                    <p className="text-white text-xs sm:text-sm font-medium text-center">
+                        আমাদের যে কোন পণ্য অর্ডার করতে Whatsapp করুন বা কল করুন
+                    </p>
+                    <div className="flex items-center gap-4 sm:gap-6">
+                        <a 
+                            href="tel:+8801711111111" 
+                            className="flex items-center gap-1.5 text-white hover:text-green-400 transition-colors"
+                        >
+                            <FaPhoneAlt className="text-sm text-green-500" />
+                            <p className="text-xs sm:text-sm font-medium">+8801711111111</p>
+                        </a>
+                        <a 
+                            href="https://wa.me/8801711111111" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-white hover:text-green-400 transition-colors"
+                        >
+                            <PiWhatsappLogoBold className="text-sm text-green-500" />
+                            <p className="text-xs sm:text-sm font-medium">+8801711111111</p>
+                        </a>
                     </div>
                 </div>
-            </div>
-            <div className="flex gap-5 text-white text-[16px] p-[2px]">
-                <FaFacebookSquare />
-                <FaYoutube />
-                <FaInstagram />
-                <AiFillTikTok />
-                <CgMail />
-                <FaPhoneAlt />
-                <FaLinkedin />
             </div>
         </div>
     );
