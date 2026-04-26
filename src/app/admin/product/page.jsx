@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { FiUploadCloud, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiUploadCloud, FiPlus, FiTrash2, FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 export default function CreateProductPage() {
     const [loading, setLoading] = useState(false);
@@ -9,6 +9,8 @@ export default function CreateProductPage() {
     const [weights, setWeights] = useState([{ weight: "", stock: "", price: "", images: [] }]);
     const [coverImage, setCoverImage] = useState(null);
     const [coverImagePreview, setCoverImagePreview] = useState("");
+    const [qaList, setQaList] = useState([{ question: "", answer: "" }]);
+    const [qaExpanded, setQaExpanded] = useState(true);
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
@@ -57,10 +59,27 @@ export default function CreateProductPage() {
         setWeights(newWeights);
     };
 
+    const addQA = () => {
+        setQaList([...qaList, { question: "", answer: "" }]);
+    };
+
+    const removeQA = (index) => {
+        const newQA = qaList.filter((_, i) => i !== index);
+        setQaList(newQA);
+    };
+
+    const updateQA = (index, field, value) => {
+        const newQA = [...qaList];
+        newQA[index][field] = value;
+        setQaList(newQA);
+    };
+
     const handleProductSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
+
+        const filteredQA = qaList.filter(qa => qa.question.trim() && qa.answer.trim());
 
         const formData = new FormData();
 
@@ -74,6 +93,7 @@ export default function CreateProductPage() {
             price: parseFloat(w.price) || 0
         }))));
         formData.append("description", e.target.description.value);
+        formData.append("qa", JSON.stringify(filteredQA));
 
         weights.forEach((weight, index) => {
             weight.images.forEach((file) => {
@@ -94,6 +114,7 @@ export default function CreateProductPage() {
                 setWeights([{ weight: "", stock: "", price: "", images: [] }]);
                 setCoverImage(null);
                 setCoverImagePreview("");
+                setQaList([{ question: "", answer: "" }]);
             } else {
                 setMessage(`Error: ${data.message}`);
             }
@@ -268,6 +289,71 @@ export default function CreateProductPage() {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-gray-700 resize-none" 
                         placeholder="Details about product..." 
                     />
+                </div>
+
+                <div className="border-t pt-5">
+                    <button
+                        type="button"
+                        onClick={() => setQaExpanded(!qaExpanded)}
+                        className="flex items-center justify-between w-full mb-4"
+                    >
+                        <h4 className="text-lg font-semibold text-gray-800">Question & Answer</h4>
+                        {qaExpanded ? (
+                            <FiChevronUp className="w-5 h-5 text-gray-500" />
+                        ) : (
+                            <FiChevronDown className="w-5 h-5 text-gray-500" />
+                        )}
+                    </button>
+
+                    {qaExpanded && (
+                        <div className="space-y-4">
+                            {qaList.map((qa, index) => (
+                                <div key={index} className="bg-gray-50 p-4 rounded-lg border">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-medium text-gray-600">Q&A {index + 1}</span>
+                                        {qaList.length > 1 && (
+                                            <button 
+                                                type="button" 
+                                                onClick={() => removeQA(index)}
+                                                className="text-red-500 hover:text-red-600"
+                                            >
+                                                <FiTrash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Question</label>
+                                            <input 
+                                                type="text" 
+                                                value={qa.question}
+                                                onChange={(e) => updateQA(index, "question", e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-gray-700 text-sm" 
+                                                placeholder="e.g. Is this product organic?" 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Answer</label>
+                                            <textarea 
+                                                value={qa.answer}
+                                                onChange={(e) => updateQA(index, "answer", e.target.value)}
+                                                rows={2}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-gray-700 text-sm resize-none" 
+                                                placeholder="e.g. Yes, this product is 100% organic certified." 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button 
+                                type="button" 
+                                onClick={addQA}
+                                className="flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700"
+                            >
+                                <FiPlus className="w-4 h-4" /> Add More Q&A
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <button type="submit" disabled={loading} className="mt-4 flex items-center justify-center gap-2 w-full bg-emerald-600 text-white font-medium py-3 rounded-lg shadow hover:bg-emerald-700 disabled:opacity-70 transition">

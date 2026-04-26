@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { FiShoppingCart, FiCheck } from "react-icons/fi";
+import { FiShoppingCart, FiCheck, FiHelpCircle } from "react-icons/fi";
 import { addToCart } from "@/utils/cart";
 
 export default function ProductClient({ productId }) {
@@ -13,6 +13,7 @@ export default function ProductClient({ productId }) {
     const [quantity, setQuantity] = useState(1);
     const [adding, setAdding] = useState(false);
     const [added, setAdded] = useState(false);
+    const [qaExpanded, setQaExpanded] = useState({});
     const router = useRouter();
     const productRef = useRef(null);
 
@@ -138,6 +139,13 @@ export default function ProductClient({ productId }) {
 
     const goToCart = () => {
         router.push('/cart');
+    };
+
+    const toggleQA = (index) => {
+        setQaExpanded(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
     };
 
     if (loading) {
@@ -315,6 +323,41 @@ export default function ProductClient({ productId }) {
                             <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
                                 {product.description}
                             </p>
+                        </div>
+                    )}
+
+                    {product.qa && product.qa.length > 0 && (
+                        <div className="mt-8 sm:mt-10">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <FiHelpCircle className="w-5 h-5 text-emerald-600" />
+                                Questions & Answers
+                            </h3>
+                            <div className="space-y-3">
+                                {product.qa.map((item, index) => (
+                                    <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+                                        <button
+                                            onClick={() => toggleQA(index)}
+                                            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                                        >
+                                            <span className="font-medium text-gray-800 text-sm sm:text-base pr-4">
+                                                Q: {item.question}
+                                            </span>
+                                            <span className={`w-6 h-6 flex items-center justify-center text-gray-500 transition-transform ${qaExpanded[index] ? 'rotate-180' : ''}`}>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </span>
+                                        </button>
+                                        {qaExpanded[index] && (
+                                            <div className="p-4 bg-white border-t border-gray-200">
+                                                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+                                                    A: {item.answer}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
