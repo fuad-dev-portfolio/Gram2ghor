@@ -59,7 +59,7 @@ export default function AllProducts() {
     return (
         <div className="w-full py-8 px-4">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">All Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-7xl mx-auto">
                 {products.map((product) => {
                     const productImage = product.cover_image || (product.weights && product.weights[0]?.images?.[0]) || null;
                     return (

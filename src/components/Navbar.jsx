@@ -11,10 +11,12 @@ function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobile, setIsMobile] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
     const router = useRouter();
 
     useEffect(() => {
+        setIsHydrated(true);
         const checkMobile = () => {
             setIsMobile(window.innerWidth < 768);
         };
@@ -161,21 +163,12 @@ function Navbar() {
 
                         <div className="flex items-center space-x-2 sm:space-x-4">
                             <button
-                                onClick={() => isMobile && setMobileMenuOpen(true)}
+                                onClick={() => isHydrated && setMobileMenuOpen(true)}
                                 className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                                 aria-label="Search"
                             >
                                 <FiSearch className="w-5 h-5 sm:w-6 sm:h-6" />
                             </button>
-
-                            <Link
-                                href="/track-order"
-                                className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                                aria-label="Track Order"
-                                title="Track Order"
-                            >
-                                <FiTruck className="w-5 h-5 sm:w-6 sm:h-6" />
-                            </Link>
 
                             <Link href="/cart" className="relative">
                                 <button

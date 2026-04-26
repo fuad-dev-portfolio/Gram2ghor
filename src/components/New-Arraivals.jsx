@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
@@ -7,12 +7,12 @@ export default function NewArraivals() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const scrollRef = useRef(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-    const productsPerPage = 4;
+    const scrollContainerRef = React.useRef(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -36,20 +36,36 @@ export default function NewArraivals() {
         fetchProducts();
     }, [backendUrl]);
 
-    const scroll = (direction) => {
-        if (scrollRef.current) {
-            const scrollAmount = direction === 'left' ? -300 : 300;
-            scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    const updateScrollButtons = () => {
+        if (scrollContainerRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
         }
     };
 
-    const goToPrev = () => {
-        setCurrentIndex((prev) => Math.max(0, prev - productsPerPage));
+    const scroll = (direction) => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = scrollContainerRef.current.clientWidth;
+            scrollContainerRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
     };
 
-    const goToNext = () => {
-        setCurrentIndex((prev) => Math.min(products.length - productsPerPage, prev + productsPerPage));
-    };
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (container) {
+            container.addEventListener('scroll', updateScrollButtons);
+            updateScrollButtons();
+            window.addEventListener('resize', updateScrollButtons);
+            return () => {
+                container.removeEventListener('scroll', updateScrollButtons);
+                window.removeEventListener('resize', updateScrollButtons);
+            };
+        }
+    }, [products]);
 
     if (loading) {
         return (
@@ -77,48 +93,50 @@ export default function NewArraivals() {
 
     return (
         <div className="w-full py-8 px-4">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
                 <div className="flex-1">
                     <h2 className="text-2xl font-bold text-gray-800 text-center">New Arrivals</h2>
                 </div>
                 <div className="flex gap-2">
                     <button
-                        onClick={goToPrev}
-                        disabled={currentIndex === 0}
-                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => scroll('left')}
+                        disabled={!canScrollLeft}
+                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Scroll left"
                     >
                         <FiArrowLeft className="w-5 h-5 text-gray-700" />
                     </button>
                     <button
-                        onClick={goToNext}
-                        disabled={currentIndex + productsPerPage >= products.length}
-                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => scroll('right')}
+                        disabled={!canScrollRight}
+                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Scroll right"
                     >
                         <FiArrowRight className="w-5 h-5 text-gray-700" />
                     </button>
                 </div>
             </div>
 
-            <div className="relative">
+            <div className="relative max-w-7xl mx-auto">
                 <div
-                    ref={scrollRef}
-                    className="flex gap-6 overflow-x-auto scrollbar-hide"
+                    ref={scrollContainerRef}
+                    className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {products.slice(currentIndex, currentIndex + productsPerPage).map((product) => {
+                    {products.map((product) => {
                         const productImage = product.cover_image || (product.weights && product.weights[0]?.images?.[0]) || null;
                         return (
                             <div
                                 key={product._id}
                                 onClick={() => router.push(`/product/${product._id}`)}
-                                className="min-w-[250px] bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                                className="min-w-[calc(50%-8px)] sm:min-w-[calc(50%-12px)] md:min-w-[calc(50%-12px)] bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex-shrink-0"
                             >
                                 <div className="aspect-square bg-gray-100 relative">
                                     {productImage ? (
                                         <img
                                             src={productImage}
                                             alt={product.firstName}
-                                            className="w-[250px] h-[250px] object-cover"
+                                            className="w-full h-full object-cover"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -156,6 +174,3 @@ export default function NewArraivals() {
         </div>
     );
 }
-
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const productsPerPage = 4;
