@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiEye, FiPlus } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
 export default function NewArraivals() {
@@ -9,6 +9,7 @@ export default function NewArraivals() {
     const [error, setError] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [productsPerView, setProductsPerView] = useState(2);
+    const [hoveredProduct, setHoveredProduct] = useState(null);
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
@@ -124,18 +125,44 @@ export default function NewArraivals() {
                             <div
                                 key={product._id}
                                 onClick={() => goToProduct(product._id)}
+                                onMouseEnter={() => setHoveredProduct(product._id)}
+                                onMouseLeave={() => setHoveredProduct(null)}
                                 className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 cursor-pointer"
                             >
-                                <div className="aspect-square bg-gray-100 overflow-hidden">
+                                <div className="relative aspect-square bg-gray-100 overflow-hidden">
                                     {productImage ? (
                                         <img
                                             src={productImage}
                                             alt={product.firstName}
-                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                            className={`w-full h-full object-cover transition-transform duration-500 ${hoveredProduct === product._id ? 'scale-110' : ''}`}
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400">
                                             No Image
+                                        </div>
+                                    )}
+
+                                    {hoveredProduct === product._id && (
+                                        <div className="absolute inset-0 bg-black/40 flex items-end justify-center pb-4 gap-3">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    goToProduct(product._id);
+                                                }}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-emerald-600 hover:text-white text-gray-800 text-xs font-medium rounded-full transition-colors"
+                                            >
+                                                <FiEye className="w-3.5 h-3.5" />
+                                                Quick View
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    goToProduct(product._id);
+                                                }}
+                                                className="flex items-center justify-center w-8 h-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-colors"
+                                            >
+                                                <FiPlus className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     )}
                                 </div>
