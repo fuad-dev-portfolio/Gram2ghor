@@ -10,10 +10,11 @@ export default function WhatsAppFloatingButton() {
         setIsVisible(true);
     }, []);
 
-    const whatsappNumber = "8801618566586";
-    const whatsappLink = `https://wa.me/${whatsappNumber}`;
-    const defaultMessage = encodeURIComponent("হ্যালো, আমি একটি পণ্য সম্পর্কে জানতে চাই।");
-    const whatsappLinkWithMessage = `${whatsappLink}?text=${defaultMessage}`;
+    const whatsappNumber = "01618566586";
+    const defaultMessage = "হ্যালো, আমি একটি পণ্য সম্পর্কে জানতে চাই।";
+    const encodedMessage = encodeURIComponent(defaultMessage);
+    
+    const whatsappLink = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
 
     return (
         <div
@@ -23,7 +24,7 @@ export default function WhatsAppFloatingButton() {
         >
             <div className="relative">
                 <a
-                    href={whatsappLinkWithMessage}
+                    href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     onMouseEnter={() => setIsTooltipVisible(true)}
