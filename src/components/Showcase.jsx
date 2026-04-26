@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 export default function Showcase() {
     const [headers, setHeaders] = useState([]);
@@ -8,6 +8,7 @@ export default function Showcase() {
     const [current, setCurrent] = useState(0);
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+    const sliderRef = useRef(null);
 
     useEffect(() => {
         const fetchHeaders = async () => {
@@ -33,7 +34,7 @@ export default function Showcase() {
         if (headers.length <= 1) return;
         const timer = setInterval(() => {
             setCurrent((prev) => (prev + 1) % headers.length);
-        }, 8000);
+        }, 5000);
         return () => clearInterval(timer);
     }, [headers.length]);
 
@@ -43,9 +44,9 @@ export default function Showcase() {
 
     if (loading) {
         return (
-            <div className="mt-2 sm:mt-6 w-full h-[40vh] sm:h-[60vh] md:h-[80vh] flex items-center justify-center bg-gray-100">
+            <div className="w-full h-[60vh] flex items-center justify-center bg-gray-100">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-4 border-gray-300 border-t-emerald-600 rounded-full animate-spin" />
                     <p className="text-gray-500 text-sm tracking-wide">Loading...</p>
                 </div>
             </div>
@@ -54,7 +55,7 @@ export default function Showcase() {
 
     if (error) {
         return (
-            <div className="w-full h-[40vh] sm:h-[60vh] md:h-[80vh] flex items-center justify-center bg-gray-100">
+            <div className="w-full h-[60vh] flex items-center justify-center bg-gray-100">
                 <p className="text-red-500">{error}</p>
             </div>
         );
@@ -62,33 +63,34 @@ export default function Showcase() {
 
     if (headers.length === 0) {
         return (
-            <div className="w-full h-[40vh] sm:h-[60vh] md:h-[80vh] flex items-center justify-center bg-gray-100">
+            <div className="w-full h-[60vh] flex items-center justify-center bg-gray-100">
                 <p className="text-gray-500">No header images available</p>
             </div>
         );
     }
 
     return (
-        <div className="relative w-full overflow-hidden">
+        <div className="relative w-full h-[60vh] overflow-hidden bg-gray-100">
             <div
-                className="flex transition-transform duration-700 ease-in-out"
+                ref={sliderRef}
+                className="flex h-full transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${current * 100}%)` }}
             >
                 {headers.map((header) => (
-                    <div key={header._id} className="min-w-full flex-shrink-0">
+                    <div key={header._id} className="min-w-full h-full flex-shrink-0">
                         {header.url ? (
-                            <a href={header.url} target="_blank" rel="noopener noreferrer" className="block">
+                            <a href={header.url} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
                                 <img
                                     src={header.image}
                                     alt="Header"
-                                    className="w-full h-[40vh] sm:h-[60vh] md:h-[80vh] object-cover"
+                                    className="w-full h-full object-cover"
                                 />
                             </a>
                         ) : (
                             <img
                                 src={header.image}
                                 alt="Header"
-                                className="w-full h-[40vh] sm:h-[60vh] md:h-[80vh] object-cover"
+                                className="w-full h-full object-cover"
                             />
                         )}
                     </div>
@@ -96,7 +98,7 @@ export default function Showcase() {
             </div>
 
             {headers.length > 1 && (
-                <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
                     {headers.map((_, index) => (
                         <button
                             key={index}
@@ -104,8 +106,8 @@ export default function Showcase() {
                             aria-label={`Go to slide ${index + 1}`}
                             className={`rounded-full transition-all duration-300 focus:outline-none ${
                                 index === current
-                                    ? "w-5 sm:w-6 h-2 sm:h-3 bg-white shadow-md"
-                                    : "w-2 sm:w-3 h-2 sm:h-3 bg-white/50 hover:bg-white/80"
+                                    ? "w-6 h-3 bg-emerald-600 shadow-md"
+                                    : "w-3 h-3 bg-white/60 hover:bg-white/90"
                             }`}
                         />
                     ))}
@@ -113,7 +115,7 @@ export default function Showcase() {
             )}
 
             {headers.length > 1 && (
-                <div className="absolute bottom-0 left-0 w-full h-16 sm:h-24 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
             )}
         </div>
     );
