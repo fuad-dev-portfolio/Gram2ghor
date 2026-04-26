@@ -275,6 +275,13 @@ export default function ProductClient({ productId }) {
                             >
                                 +
                             </button>
+                            <button
+                                onClick={handleCashOnDelivery}
+                                disabled={adding || !currentWeight?.stock}
+                                className="ml-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+                            >
+                                Cash on Delivery
+                            </button>
                         </div>
                     </div>
 
@@ -290,21 +297,13 @@ export default function ProductClient({ productId }) {
                         </p>
                     </div>
 
-                    <div className="mt-6 sm:mt-8 space-y-3">
+                    <div className="mt-6 sm:mt-8">
                         <button
                             onClick={added ? goToCart : handleAddToCart}
                             disabled={adding || !currentWeight?.stock}
                             className="w-full bg-emerald-600 text-white font-medium py-3 sm:py-3.5 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                         >
                             {adding ? 'Adding...' : added ? <><FiCheck className="w-5 h-5" /> Added - Go to Cart</> : currentWeight?.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
-                        </button>
-
-                        <button
-                            onClick={handleCashOnDelivery}
-                            disabled={adding || !currentWeight?.stock}
-                            className="w-full bg-emerald-600 text-white font-medium py-3 sm:py-3.5 rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
-                        >
-                            Cash on Delivery
                         </button>
                     </div>
 

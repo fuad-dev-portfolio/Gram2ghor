@@ -1,13 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FiEye, FiPlus } from "react-icons/fi";
 
 export default function AllProducts() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [hoveredProduct, setHoveredProduct] = useState(null);
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
@@ -71,44 +69,19 @@ export default function AllProducts() {
                     return (
                         <div
                             key={product._id}
-                            onMouseEnter={() => setHoveredProduct(product._id)}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                            className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                            onClick={() => goToProduct(product._id)}
+                            className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 cursor-pointer"
                         >
-                            <div className="relative aspect-square bg-gray-100 overflow-hidden group">
+                            <div className="aspect-square bg-gray-100 overflow-hidden">
                                 {productImage ? (
                                     <img
                                         src={productImage}
                                         alt={product.firstName}
-                                        className={`w-full h-full object-cover transition-transform duration-500 ${hoveredProduct === product._id ? 'scale-110' : ''}`}
+                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">
                                         No Image
-                                    </div>
-                                )}
-
-                                {hoveredProduct === product._id && (
-                                    <div className="absolute inset-0 bg-black/40 flex items-end justify-center pb-3 sm:pb-4 gap-2 sm:gap-3">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                goToProduct(product._id);
-                                            }}
-                                            className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 bg-white hover:bg-emerald-600 hover:text-white text-gray-800 text-[10px] sm:text-xs font-medium rounded-full transition-colors"
-                                        >
-                                            <FiEye className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-                                            Quick View
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                goToProduct(product._id);
-                                            }}
-                                            className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-colors"
-                                        >
-                                            <FiPlus className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
-                                        </button>
                                     </div>
                                 )}
                             </div>
