@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiGrid, FiPackage, FiLayout, FiList } from "react-icons/fi";
+import { FiGrid, FiPackage, FiLayout, FiList, FiTruck } from "react-icons/fi";
 
 export default function AdminLayout({ children }) {
     const pathname = usePathname();
@@ -10,13 +10,14 @@ export default function AdminLayout({ children }) {
     const menuItems = [
         { name: 'Add Category', path: '/admin/category', icon: <FiGrid className="w-5 h-5" /> },
         { name: 'All Categories', path: '/admin/category/all-categories', icon: <FiList className="w-5 h-5" /> },
-        { name: 'Products', path: '/admin/product', icon: <FiPackage className="w-5 h-5" /> },
+        { name: 'Upload Product', path: '/admin/product', icon: <FiPackage className="w-5 h-5" /> },
+        { name: 'All Products', path: '/admin/product/all-products', icon: <FiPackage className="w-5 h-5" /> },
+        { name: 'Stock Management', path: '/admin/stock', icon: <FiTruck className="w-5 h-5" /> },
         { name: 'Headers', path: '/admin/header', icon: <FiLayout className="w-5 h-5" /> },
     ];
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
-            {/* Sidebar */}
             <div className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col gap-4 shadow-sm shrink-0">
                 <Link href="/admin" className="text-2xl font-bold text-emerald-800 mb-6 tracking-tight block">
                     Admin Panel
@@ -40,9 +41,8 @@ export default function AdminLayout({ children }) {
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 p-10 overflow-y-auto">
-                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <div className="flex-1 p-6 lg:p-10 overflow-y-auto">
+                <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     {children}
                 </div>
             </div>
