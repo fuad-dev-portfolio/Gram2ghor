@@ -70,7 +70,7 @@ export default function Showcase() {
     }
 
     return (
-        <div className="relative w-full h-[60vh] overflow-hidden bg-gray-100">
+        <div className="mt-4 lg:mt-8 relative w-full h-[50vh] lg:h-[60vh] overflow-hidden bg-gray-100">
             <div
                 ref={sliderRef}
                 className="flex h-full transition-transform duration-700 ease-in-out"
@@ -104,11 +104,10 @@ export default function Showcase() {
                             key={index}
                             onClick={() => goTo(index)}
                             aria-label={`Go to slide ${index + 1}`}
-                            className={`rounded-full transition-all duration-300 focus:outline-none ${
-                                index === current
+                            className={`rounded-full transition-all duration-300 focus:outline-none ${index === current
                                     ? "w-6 h-3 bg-emerald-600 shadow-md"
                                     : "w-3 h-3 bg-white/60 hover:bg-white/90"
-                            }`}
+                                }`}
                         />
                     ))}
                 </div>
