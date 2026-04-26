@@ -7,12 +7,12 @@ export default function NewArraivals() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(true);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-    const scrollContainerRef = React.useRef(null);
+    const productsPerView = 2;
+    const containerRef = React.useRef(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -36,36 +36,16 @@ export default function NewArraivals() {
         fetchProducts();
     }, [backendUrl]);
 
-    const updateScrollButtons = () => {
-        if (scrollContainerRef.current) {
-            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-            setCanScrollLeft(scrollLeft > 0);
-            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-        }
-    };
+    const canScrollLeft = currentIndex > 0;
+    const canScrollRight = currentIndex + productsPerView < products.length;
 
     const scroll = (direction) => {
-        if (scrollContainerRef.current) {
-            const scrollAmount = scrollContainerRef.current.clientWidth;
-            scrollContainerRef.current.scrollBy({
-                left: direction === 'left' ? -scrollAmount : scrollAmount,
-                behavior: 'smooth'
-            });
+        if (direction === 'left' && canScrollLeft) {
+            setCurrentIndex(prev => prev - productsPerView);
+        } else if (direction === 'right' && canScrollRight) {
+            setCurrentIndex(prev => prev + productsPerView);
         }
     };
-
-    useEffect(() => {
-        const container = scrollContainerRef.current;
-        if (container) {
-            container.addEventListener('scroll', updateScrollButtons);
-            updateScrollButtons();
-            window.addEventListener('resize', updateScrollButtons);
-            return () => {
-                container.removeEventListener('scroll', updateScrollButtons);
-                window.removeEventListener('resize', updateScrollButtons);
-            };
-        }
-    }, [products]);
 
     if (loading) {
         return (
@@ -91,12 +71,12 @@ export default function NewArraivals() {
         );
     }
 
+    const visibleProducts = products.slice(currentIndex, currentIndex + productsPerView);
+
     return (
         <div className="w-full py-8 px-4">
             <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
-                <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-800 text-center">New Arrivals</h2>
-                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">New Arrivals</h2>
                 <div className="flex gap-2">
                     <button
                         onClick={() => scroll('left')}
@@ -117,21 +97,20 @@ export default function NewArraivals() {
                 </div>
             </div>
 
-            <div className="relative max-w-7xl mx-auto">
-                <div
-                    ref={scrollContainerRef}
-                    className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    {products.map((product) => {
+            <div 
+                ref={containerRef}
+                className="max-w-7xl mx-auto"
+            >
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                    {visibleProducts.map((product) => {
                         const productImage = product.cover_image || (product.weights && product.weights[0]?.images?.[0]) || null;
                         return (
                             <div
                                 key={product._id}
                                 onClick={() => router.push(`/product/${product._id}`)}
-                                className="min-w-[calc(50%-8px)] sm:min-w-[calc(50%-12px)] md:min-w-[calc(50%-12px)] bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex-shrink-0"
+                                className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                             >
-                                <div className="aspect-square bg-gray-100 relative">
+                                <div className="aspect-square bg-gray-100">
                                     {productImage ? (
                                         <img
                                             src={productImage}
@@ -144,12 +123,12 @@ export default function NewArraivals() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-4">
-                                    <h3 className="font-semibold text-gray-800 truncate">
+                                <div className="p-3 sm:p-4">
+                                    <h3 className="font-medium sm:font-semibold text-gray-800 text-sm sm:text-base truncate">
                                         {product.firstName}
                                     </h3>
                                     {product.lastName && (
-                                        <p className="text-sm text-gray-500 truncate">
+                                        <p className="text-xs sm:text-sm text-gray-500 truncate">
                                             {product.lastName}
                                         </p>
                                     )}
@@ -160,7 +139,7 @@ export default function NewArraivals() {
                                     )}
                                     <div className="mt-2">
                                         {product.weights && product.weights.length > 0 && (
-                                            <p className="text-lg font-bold text-gray-900">
+                                            <p className="text-base sm:text-lg font-bold text-gray-900">
                                                 ৳{Math.min(...product.weights.map(w => w.price))}
                                             </p>
                                         )}
