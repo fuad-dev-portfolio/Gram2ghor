@@ -91,7 +91,7 @@ export default function NewArraivals() {
     return (
         <div className="w-full py-8 px-4">
             <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">New Arrivals</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">New Arrivals</h2>
                 <div className="flex gap-2">
                     <button
                         onClick={() => scroll('left')}
@@ -135,23 +135,23 @@ export default function NewArraivals() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-3">
-                                    <h3 className="font-medium text-gray-800 text-sm truncate">
+                                <div className="p-3 flex flex-col items-center">
+                                    <h3 className="font-medium text-gray-800 text-sm text-center truncate w-full">
                                         {product.firstName}
                                     </h3>
                                     {product.lastName && (
-                                        <p className="text-xs text-gray-500 truncate">
+                                        <p className="text-xs text-gray-500 truncate text-center w-full">
                                             {product.lastName}
                                         </p>
                                     )}
                                     {product.category && (
-                                        <p className="text-xs text-emerald-600 mt-1">
+                                        <p className="text-xs text-emerald-600 mt-1 text-center">
                                             {product.category.category_name}
                                         </p>
                                     )}
                                     <div className="mt-2">
                                         {product.weights && product.weights.length > 0 && (
-                                            <p className="text-base font-bold text-gray-900">
+                                            <p className="text-base font-bold text-gray-900 text-center">
                                                 ৳{Math.min(...product.weights.map(w => w.price))}
                                             </p>
                                         )}

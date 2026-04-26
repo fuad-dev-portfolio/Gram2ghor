@@ -81,23 +81,23 @@ export default function AllProducts() {
                                     </div>
                                 )}
                             </div>
-                            <div className="p-2 sm:p-3">
-                                <h3 className="font-medium text-gray-800 text-xs sm:text-sm truncate">
+                            <div className="p-2 sm:p-3 flex flex-col items-center">
+                                <h3 className="font-medium text-gray-800 text-xs sm:text-sm truncate text-center w-full">
                                     {product.firstName}
                                 </h3>
                                 {product.lastName && (
-                                    <p className="text-[10px] sm:text-xs text-gray-500 truncate">
+                                    <p className="text-[10px] sm:text-xs text-gray-500 truncate text-center w-full">
                                         {product.lastName}
                                     </p>
                                 )}
                                 {product.category && (
-                                    <p className="text-[10px] sm:text-xs text-emerald-600 mt-1 truncate">
+                                    <p className="text-[10px] sm:text-xs text-emerald-600 mt-1 truncate text-center">
                                         {product.category.category_name}
                                     </p>
                                 )}
                                 <div className="mt-1 sm:mt-2">
                                     {product.weights && product.weights.length > 0 && (
-                                        <p className="text-sm sm:text-base font-bold text-gray-900">
+                                        <p className="text-sm sm:text-base font-bold text-gray-900 text-center">
                                             ৳{Math.min(...product.weights.map(w => w.price))}
                                         </p>
                                     )}
