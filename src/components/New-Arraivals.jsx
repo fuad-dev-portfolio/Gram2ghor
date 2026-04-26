@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
@@ -8,11 +8,26 @@ export default function NewArraivals() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [productsPerView, setProductsPerView] = useState(2);
     const router = useRouter();
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-    const productsPerView = 2;
     const containerRef = React.useRef(null);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width >= 1024) {
+                setProductsPerView(4);
+            } else {
+                setProductsPerView(2);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -39,13 +54,13 @@ export default function NewArraivals() {
     const canScrollLeft = currentIndex > 0;
     const canScrollRight = currentIndex + productsPerView < products.length;
 
-    const scroll = (direction) => {
+    const scroll = useCallback((direction) => {
         if (direction === 'left' && canScrollLeft) {
-            setCurrentIndex(prev => prev - productsPerView);
+            setCurrentIndex(prev => Math.max(0, prev - productsPerView));
         } else if (direction === 'right' && canScrollRight) {
-            setCurrentIndex(prev => prev + productsPerView);
+            setCurrentIndex(prev => Math.min(products.length - productsPerView, prev + productsPerView));
         }
-    };
+    }, [canScrollLeft, canScrollRight, productsPerView, products.length]);
 
     if (loading) {
         return (
@@ -97,11 +112,8 @@ export default function NewArraivals() {
                 </div>
             </div>
 
-            <div 
-                ref={containerRef}
-                className="max-w-7xl mx-auto"
-            >
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+            <div ref={containerRef} className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {visibleProducts.map((product) => {
                         const productImage = product.cover_image || (product.weights && product.weights[0]?.images?.[0]) || null;
                         return (
@@ -115,7 +127,7 @@ export default function NewArraivals() {
                                         <img
                                             src={productImage}
                                             alt={product.firstName}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -123,12 +135,12 @@ export default function NewArraivals() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-3 sm:p-4">
-                                    <h3 className="font-medium sm:font-semibold text-gray-800 text-sm sm:text-base truncate">
+                                <div className="p-3">
+                                    <h3 className="font-medium text-gray-800 text-sm truncate">
                                         {product.firstName}
                                     </h3>
                                     {product.lastName && (
-                                        <p className="text-xs sm:text-sm text-gray-500 truncate">
+                                        <p className="text-xs text-gray-500 truncate">
                                             {product.lastName}
                                         </p>
                                     )}
@@ -139,7 +151,7 @@ export default function NewArraivals() {
                                     )}
                                     <div className="mt-2">
                                         {product.weights && product.weights.length > 0 && (
-                                            <p className="text-base sm:text-lg font-bold text-gray-900">
+                                            <p className="text-base font-bold text-gray-900">
                                                 ৳{Math.min(...product.weights.map(w => w.price))}
                                             </p>
                                         )}
