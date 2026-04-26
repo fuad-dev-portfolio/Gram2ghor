@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar.jsx";
 import HeaderTop from "@/components/Header-top.jsx";
 import Footer from "@/components/Footer.jsx";
-import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton.jsx";
+import WhatsAppChatWidget from "@/components/WhatsAppChatWidget.jsx";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <Footer />
-        <WhatsAppFloatingButton />
+        <WhatsAppChatWidget />
       </body>
     </html>
   );
