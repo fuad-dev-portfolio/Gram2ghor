@@ -285,7 +285,7 @@ export default function CreateProductPage() {
                     <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Description</label>
                     <textarea 
                         name="description" 
-                        rows={3} sm:rows={4}
+                        rows={4}
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-gray-700 resize-none text-xs sm:text-sm" 
                         placeholder="Details about product..." 
                     />
