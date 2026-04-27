@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { FiPackage, FiShoppingCart, FiDollarSign, FiTrendingUp, FiUsers, FiTruck, FiCheck, FiX, FiClock, FiActivity } from "react-icons/fi";
+import { FiPackage, FiShoppingCart, FiDollarSign, FiTrendingUp, FiUsers, FiTruck, FiCheck, FiX, FiClock, FiActivity, FiGrid, FiArchive } from "react-icons/fi";
 import Link from "next/link";
 
 export default function DashboardPage() {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [recentOrders, setRecentOrders] = useState([]);
+    const [counts, setCounts] = useState({ products: 0, categories: 0 });
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
@@ -28,11 +29,25 @@ export default function DashboardPage() {
                 setStats(statsData.data);
             }
 
+            // Fetch products count
+            const productsRes = await fetch(`${backendUrl}/api/admin/product/get-product`);
+            const productsData = await productsRes.json();
+            if (productsData.success) {
+                setCounts(prev => ({ ...prev, products: productsData.data?.length || 0 }));
+            }
+
+            // Fetch categories count  
+            const categoriesRes = await fetch(`${backendUrl}/api/admin/category/get-all-category`);
+            const categoriesData = await categoriesRes.json();
+            if (categoriesData.success) {
+                setCounts(prev => ({ ...prev, categories: categoriesData.data?.length || 0 }));
+            }
+
             // Fetch recent orders
             const ordersRes = await fetch(`${backendUrl}/api/admin/order/get-all`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'all', limit: 5 })
+                body: JSON.stringify({ status: 'all' })
             });
             const ordersData = await ordersRes.json();
 
@@ -76,6 +91,40 @@ export default function DashboardPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Total Products */}
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-5 text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-blue-100 text-sm">Total Products</p>
+                            <p className="text-3xl font-bold mt-1">{counts.products}</p>
+                        </div>
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <FiPackage className="w-6 h-6" />
+                        </div>
+                    </div>
+                    <div className="mt-4 text-blue-100 text-sm flex items-center gap-1">
+                        <FiArchive className="w-4 h-4" />
+                        All products
+                    </div>
+                </div>
+
+                {/* Total Categories */}
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-5 text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-purple-100 text-sm">Categories</p>
+                            <p className="text-3xl font-bold mt-1">{counts.categories}</p>
+                        </div>
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <FiGrid className="w-6 h-6" />
+                        </div>
+                    </div>
+                    <div className="mt-4 text-purple-100 text-sm flex items-center gap-1">
+                        <FiActivity className="w-4 h-4" />
+                        All categories
+                    </div>
+                </div>
+
                 {/* Total Orders */}
                 <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-5 text-white">
                     <div className="flex items-center justify-between">
@@ -90,40 +139,6 @@ export default function DashboardPage() {
                     <div className="mt-4 text-emerald-100 text-sm flex items-center gap-1">
                         <FiActivity className="w-4 h-4" />
                         All time orders
-                    </div>
-                </div>
-
-                {/* Pending Orders */}
-                <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl p-5 text-white">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-yellow-100 text-sm">Pending</p>
-                            <p className="text-3xl font-bold mt-1">{stats?.pendingOrders || 0}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                            <FiClock className="w-6 h-6" />
-                        </div>
-                    </div>
-                    <div className="mt-4 text-yellow-100 text-sm flex items-center gap-1">
-                        <FiTruck className="w-4 h-4" />
-                        Awaiting confirmation
-                    </div>
-                </div>
-
-                {/* Delivered */}
-                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-5 text-white">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-green-100 text-sm">Delivered</p>
-                            <p className="text-3xl font-bold mt-1">{stats?.deliveredOrders || 0}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                            <FiCheck className="w-6 h-6" />
-                        </div>
-                    </div>
-                    <div className="mt-4 text-green-100 text-sm flex items-center gap-1">
-                        <FiPackage className="w-4 h-4" />
-                        Completed orders
                     </div>
                 </div>
 
@@ -243,37 +258,48 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Link href="/admin/orders" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-500 hover:shadow-md transition-all">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
                             <FiTruck className="w-6 h-6 text-emerald-600" />
                         </div>
                         <div>
-                            <p className="font-semibold text-gray-800">Manage Orders</p>
-                            <p className="text-sm text-gray-500">View & update orders</p>
+                            <p className="font-semibold text-gray-800">Orders</p>
+                            <p className="text-sm text-gray-500">{stats?.totalOrders || 0} orders</p>
                         </div>
                     </div>
                 </Link>
-                <Link href="/admin/product" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-500 hover:shadow-md transition-all">
+                <Link href="/admin/product/all-products" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-500 hover:shadow-md transition-all">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                             <FiPackage className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
-                            <p className="font-semibold text-gray-800">Add Product</p>
-                            <p className="text-sm text-gray-500">Upload new product</p>
+                            <p className="font-semibold text-gray-800">Products</p>
+                            <p className="text-sm text-gray-500">{counts.products} products</p>
+                        </div>
+                    </div>
+                </Link>
+                <Link href="/admin/category/all-categories" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-500 hover:shadow-md transition-all">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                            <FiGrid className="w-6 h-6 text-purple-600" />
+                        </div>
+                        <div>
+                            <p className="font-semibold text-gray-800">Categories</p>
+                            <p className="text-sm text-gray-500">{counts.categories} categories</p>
                         </div>
                     </div>
                 </Link>
                 <Link href="/admin/stock" className="bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-500 hover:shadow-md transition-all">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                            <FiTrendingUp className="w-6 h-6 text-purple-600" />
+                        <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                            <FiTrendingUp className="w-6 h-6 text-amber-600" />
                         </div>
                         <div>
                             <p className="font-semibold text-gray-800">Stock</p>
-                            <p className="text-sm text-gray-500">Manage inventory</p>
+                            <p className="text-sm text-gray-500">Inventory</p>
                         </div>
                     </div>
                 </Link>
