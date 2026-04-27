@@ -48,7 +48,7 @@ export default function AdminLayout({ children }) {
             {/* Mobile Toggle Button */}
             <button
                 onClick={() => setSidebarOpen(true)}
-                className={`fixed top-4 left-4 z-50 p-2.5 sm:p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg-lg shadow-lg transition-all lg:hidden ${sidebarOpen ? 'hidden' : ''}`}
+                className={`fixed top-4 right-4 z-50 p-2.5 sm:p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-lg transition-all md:hidden ${sidebarOpen ? 'hidden' : ''}`}
                 aria-label="Open menu"
             >
                 <FiMenu className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -57,18 +57,20 @@ export default function AdminLayout({ children }) {
             {/* Overlay */}
             {sidebarOpen && isMobile && (
                 <div 
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
-            {/* Sidebar */}
+            {/* Sidebar - Right side for desktop, left slide for mobile */}
             <div className={`
-                fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-out
-                lg:relative lg:translate-x-0
-                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                fixed top-0 h-full z-50 transition-all duration-300 ease-out
+                md:relative md:translate-x-0
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}>
-                <div className="h-full w-56 sm:w-64 bg-white/95 backdrop-blur-md border-r border-gray-200 p-4 sm:p-5 flex flex-col shadow-xl lg:shadow-none">
+                <div className={`h-full w-56 sm:w-64 bg-white border-r border-gray-200 p-4 sm:p-5 flex flex-col shadow-xl md:shadow-none ${
+                    isMobile ? 'absolute right-0' : 'relative'
+                }`}>
                     {/* Header */}
                     <div className="flex items-center justify-between mb-6">
                         <Link href="/admin" onClick={() => isMobile && setSidebarOpen(false)} className="flex items-center gap-2">
@@ -82,7 +84,7 @@ export default function AdminLayout({ children }) {
                         </Link>
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
+                            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors md:hidden"
                             aria-label="Close menu"
                         >
                             <FiX className="w-5 h-5 text-gray-500" />
