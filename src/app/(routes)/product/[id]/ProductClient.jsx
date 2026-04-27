@@ -96,6 +96,12 @@ export default function ProductClient({ productId }) {
 
     const handleCashOnDelivery = async () => {
         if (!product || !product.weights[selectedWeight]) return;
+        
+        const currentWeight = product.weights[selectedWeight];
+        if (!currentWeight?.stock || currentWeight.stock < 1) {
+            alert('This size is out of stock');
+            return;
+        }
 
         setAdding(true);
         try {
@@ -119,8 +125,9 @@ export default function ProductClient({ productId }) {
                     productName: product.firstName,
                     productImage: product.cover_image,
                     quantity: quantity,
-                    weight: product.weights[selectedWeight].weight,
-                    price: product.weights[selectedWeight].price
+                    weight: currentWeight.weight,
+                    weightIndex: selectedWeight,
+                    price: currentWeight.price
                 })
             });
             const data = await res.json();
