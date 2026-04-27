@@ -183,6 +183,15 @@ function Navbar() {
                                     </span>
                                 )}
                             </Link>
+
+                            <Link href="/track-order" className="hidden md:flex">
+                                <button
+                                    className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                                    aria-label="Track Order"
+                                >
+                                    <FiTruck className="w-5 h-5 sm:w-6 sm:h-6" />
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
