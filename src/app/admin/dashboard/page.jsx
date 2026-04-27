@@ -30,7 +30,10 @@ export default function DashboardPage() {
             }
 
             // Fetch products count
-            const productsRes = await fetch(`${backendUrl}/api/admin/product/get-product`);
+            const productsRes = await fetch(`${backendUrl}/api/admin/product/get-all-product`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
             const productsData = await productsRes.json();
             if (productsData.success) {
                 setCounts(prev => ({ ...prev, products: productsData.data?.length || 0 }));
