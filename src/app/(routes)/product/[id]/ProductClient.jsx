@@ -302,9 +302,15 @@ export default function ProductClient({ productId }) {
                     </div>
 
                     <div className="mt-4 sm:mt-6">
-                        <p className="text-sm text-gray-500">
-                            Available Stock: {currentWeight?.stock || 0}
-                        </p>
+                        {currentWeight?.stock > 0 ? (
+                            <p className="text-sm text-emerald-600">
+                                ✓ In Stock ({currentWeight.stock} available)
+                            </p>
+                        ) : (
+                            <p className="text-sm text-red-500">
+                                ✗ Out of Stock
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-5 sm:mt-6">
