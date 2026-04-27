@@ -256,6 +256,7 @@ export default function ProductClient({ productId }) {
                                             onClick={() => {
                                                 setSelectedWeight(index);
                                                 setSelectedImage(0);
+                                                setQuantity(1); // Reset quantity when changing size
                                             }}
                                             className={`px-3 sm:px-4 py-2 rounded-lg border text-sm transition-all ${
                                                 selectedWeight === index 
