@@ -9,6 +9,7 @@ function Navbar() {
     const [categories, setCategories] = useState([]);
     const [cartCount, setCartCount] = useState(0);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobile, setIsMobile] = useState(false);
     const [isHydrated, setIsHydrated] = useState(false);
@@ -113,8 +114,8 @@ function Navbar() {
                                 <Image
                                     src="/logo.png"
                                     alt="Gram2Ghor Logo"
-                                    width={60}
-                                    height={60}
+                                    width={160}
+                                    height={160}
                                     className="object-contain w-12 sm:w-16 h-12 sm:h-16"
                                     priority
                                 />
@@ -183,22 +184,13 @@ function Navbar() {
                                     </span>
                                 )}
                             </Link>
-
-                            <Link href="/track-order" className="hidden md:flex">
-                                <button
-                                    className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                                    aria-label="Track Order"
-                                >
-                                    <FiTruck className="w-5 h-5 sm:w-6 sm:h-6" />
-                                </button>
-                            </Link>
                         </div>
                     </div>
                 </div>
             </nav>
 
             {mobileMenuOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-[60] md:hidden"
                     onClick={closeMobileMenu}
                 >
@@ -206,10 +198,9 @@ function Navbar() {
                 </div>
             )}
 
-            <div 
-                className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-[70] md:hidden transform transition-transform duration-300 ease-in-out shadow-2xl ${
-                    mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
+            <div
+                className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-[70] md:hidden transform transition-transform duration-300 ease-in-out shadow-2xl ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
             >
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-emerald-600">
@@ -261,27 +252,42 @@ function Navbar() {
                         </Link>
 
                         <div className="px-4 py-3 bg-gray-50">
-                            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                                All Categories
-                            </h3>
+                            <button
+                                onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
+                                className="flex items-center justify-between w-full text-left"
+                            >
+                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                                    All Categories
+                                </h3>
+                                <svg
+                                    className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${mobileCategoriesOpen ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
                         </div>
 
-                        <div className="py-2">
-                            {categories.length > 0 ? (
-                                categories.map((category) => (
-                                    <Link
-                                        key={category._id}
-                                        href={`/${category.category_name.toLowerCase().replace(/\s+/g, '-')}`}
-                                        onClick={closeMobileMenu}
-                                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors border-b border-gray-50"
-                                    >
-                                        <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
-                                        {category.category_name}
-                                    </Link>
-                                ))
-                            ) : (
-                                <div className="px-4 py-3 text-sm text-gray-500">No categories found</div>
-                            )}
+                        <div className={`overflow-hidden transition-all duration-300 ${mobileCategoriesOpen ? 'max-h-[500px]' : 'max-h-0'}`}>
+                            <div className="py-2">
+                                {categories.length > 0 ? (
+                                    categories.map((category) => (
+                                        <Link
+                                            key={category._id}
+                                            href={`/${category.category_name.toLowerCase().replace(/\s+/g, '-')}`}
+                                            onClick={closeMobileMenu}
+                                            className="flex items-center px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors border-b border-gray-50"
+                                        >
+                                            <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                                            {category.category_name}
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="px-4 py-3 text-sm text-gray-500">No categories found</div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="py-2 mt-auto border-t border-gray-100">
