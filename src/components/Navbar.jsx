@@ -141,7 +141,7 @@ function Navbar() {
                                             categories.map((category) => (
                                                 <Link
                                                     key={category._id}
-                                                    href={`/${category.category_name.toLowerCase().replace(/\s+/g, '-')}`}
+                                                    href={`/${encodeURIComponent(category.category_name.toLowerCase().replace(/\s+/g, '-'))}`}
                                                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
                                                 >
                                                     {category.category_name}
@@ -276,7 +276,7 @@ function Navbar() {
                                     categories.map((category) => (
                                         <Link
                                             key={category._id}
-                                            href={`/${category.category_name.toLowerCase().replace(/\s+/g, '-')}`}
+                                            href={`/${encodeURIComponent(category.category_name.toLowerCase().replace(/\s+/g, '-'))}`}
                                             onClick={closeMobileMenu}
                                             className="flex items-center px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors border-b border-gray-50"
                                         >
