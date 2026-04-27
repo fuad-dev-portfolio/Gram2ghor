@@ -25,7 +25,7 @@ const ensureGuestId = () => {
     return null;
 };
 
-export const addToCart = async (productId, quantity = 1, weight = '', price = 0) => {
+export const addToCart = async (productId, quantity = 1, weight = '', weightIndex = 0, price = 0) => {
     try {
         const guestId = ensureGuestId();
         const res = await fetch(`${backendUrl}/api/client/cart/add`, {
@@ -34,7 +34,7 @@ export const addToCart = async (productId, quantity = 1, weight = '', price = 0)
                 'Content-Type': 'application/json',
                 'guest-id': guestId
             },
-            body: JSON.stringify({ productId, quantity, weight, price }),
+            body: JSON.stringify({ productId, quantity, weight, weightIndex, price }),
             credentials: 'include'
         });
         const data = await res.json();

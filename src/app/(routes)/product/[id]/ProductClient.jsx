@@ -74,6 +74,7 @@ export default function ProductClient({ productId }) {
                     productImage: product.cover_image,
                     quantity: quantity,
                     weight: product.weights[selectedWeight].weight,
+                    weightIndex: selectedWeight,
                     price: product.weights[selectedWeight].price
                 })
             });
