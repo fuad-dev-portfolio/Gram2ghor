@@ -90,6 +90,10 @@ export default function CheckoutPage() {
                 setOrderPlaced(true);
                 setOrderData(data.data);
                 localStorage.removeItem('guestId');
+                
+                // Generate new guest ID for future orders
+                const newGuestId = `guest_${Date.now()}`;
+                localStorage.setItem('guestId', newGuestId);
             } else {
                 alert(data.message || 'Failed to place order');
             }
@@ -105,17 +109,32 @@ export default function CheckoutPage() {
     if (orderPlaced && orderData) {
         return (
             <div className="w-full py-12 flex flex-col items-center justify-center">
-                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
-                    <FiCheck className="w-8 h-8 text-emerald-600" />
+                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                    <FiCheck className="w-10 h-10 text-emerald-600" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h1>
-                <p className="text-gray-600 mb-4">Your Order ID: <span className="font-bold">{orderData.orderId}</span></p>
-                <button
-                    onClick={() => router.push('/')}
-                    className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700"
-                >
-                    Continue Shopping
-                </button>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">Order Successfully Placed!</h1>
+                <p className="text-gray-600 mb-2">Your order is waiting for confirmation.</p>
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-gray-500 mb-1">Your Order ID</p>
+                    <p className="font-mono text-xl font-bold text-emerald-700">{orderData.orderId}</p>
+                </div>
+                <p className="text-sm text-gray-500 mb-6 text-center">
+                    Track your order using your phone number: <strong>{orderData.customerPhone}</strong>
+                </p>
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => router.push(`/track-order?phone=${orderData.customerPhone}`)}
+                        className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700"
+                    >
+                        Track Order
+                    </button>
+                    <button
+                        onClick={() => router.push('/')}
+                        className="border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50"
+                    >
+                        Continue Shopping
+                    </button>
+                </div>
             </div>
         );
     }

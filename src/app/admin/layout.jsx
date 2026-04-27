@@ -34,6 +34,7 @@ export default function AdminLayout({ children }) {
 
     const menuItems = [
         { name: 'Dashboard', path: '/admin', icon: <FiGrid className="w-4 h-4 sm:w-5 sm:h-5" /> },
+        { name: 'Orders', path: '/admin/orders', icon: <FiTruck className="w-4 h-4 sm:w-5 sm:h-5" /> },
         { name: 'Add Category', path: '/admin/category', icon: <FiGrid className="w-4 h-4 sm:w-5 sm:h-5" /> },
         { name: 'All Categories', path: '/admin/category/all-categories', icon: <FiList className="w-4 h-4 sm:w-5 sm:h-5" /> },
         { name: 'Upload Product', path: '/admin/product', icon: <FiPackage className="w-4 h-4 sm:w-5 sm:h-5" /> },
