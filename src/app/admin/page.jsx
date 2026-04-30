@@ -1,9 +1,73 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiGrid, FiPackage, FiTruck, FiShoppingBag, FiDollarSign, FiTrendingUp } from "react-icons/fi";
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState({
+        totalProducts: 0,
+        totalOrders: 0,
+        pendingOrders: 0,
+        totalRevenue: 0
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const [productsRes, ordersRes, categoriesRes] = await Promise.all([
+                    fetch(`${backendUrl}/api/admin/product/get-all-product`), // Assuming this endpoint returns total count
+                    fetch(`${backendUrl}/api/admin/order/get-all-order?page=0&limit=1&status=all`), // Assuming this endpoint returns total count
+                    fetch(`${backendUrl}/api/admin/category/get-all-category`) // Assuming this endpoint returns total count
+                ]);
+
+                const productsData = await productsRes.json();
+                const ordersData = await ordersRes.json();
+                const categoriesData = await categoriesRes.json();
+
+                const totalProducts = productsData.success && productsData.data?.totalProducts
+                    ? productsData.data.totalProducts
+                    : productsData.data?.length || 0;
+
+                const totalOrders = ordersData.success && ordersData.data?.totalCount
+                    ? ordersData.data.totalCount
+                    : ordersData.data?.length || 0;
+
+                const pendingOrders = ordersData.success && ordersData.data?.orders
+                    ? ordersData.data.orders.filter(order => order.status === 'pending').length
+                    : 0;
+
+                // Total revenue calculation - summing totalAmount from orders
+                const totalRevenue = ordersData.success && ordersData.data?.orders
+                    ? ordersData.data.orders.reduce((sum, order) => sum + order.totalAmount, 0)
+                    : 0;
+
+                const totalCategories = categoriesData.success && categoriesData.data?.length
+                    ? categoriesData.data.length
+                    : 0;
+
+                setStats({
+                    totalProducts,
+                    totalOrders,
+                    pendingOrders,
+                    totalRevenue,
+                    totalCategories
+                });
+            } catch (err) {
+                setError("Failed to load dashboard data. Please try again.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, [backendUrl]);
     return (
         <div>
             <div className="mb-6">
