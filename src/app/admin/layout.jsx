@@ -40,6 +40,8 @@ export default function AdminLayout({ children }) {
         { name: 'All Categories', path: '/admin/category/all-categories', icon: <FiList className="w-5 h-5" /> },
         { name: 'Upload Product', path: '/admin/product', icon: <FiPackage className="w-5 h-5" /> },
         { name: 'All Products', path: '/admin/product/all-products', icon: <FiPackage className="w-5 h-5" /> },
+        { name: 'Ghee & Oil', path: '/admin/ghee-oil', icon: <FiPackage className="w-5 h-5" /> },
+        { name: 'Honey & Sweets', path: '/admin/honey-sweets', icon: <FiPackage className="w-5 h-5" /> },
         { name: 'Stock Management', path: '/admin/stock', icon: <FiTruck className="w-5 h-5" /> },
         { name: 'Headers', path: '/admin/header', icon: <FiLayout className="w-5 h-5" /> },
     ];
