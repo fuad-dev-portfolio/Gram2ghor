@@ -29,14 +29,15 @@ export default function DashboardPage() {
                 setStats(statsData.data);
             }
 
-            // Fetch products count
+            // Fetch products count - use totalCount from response
             const productsRes = await fetch(`${backendUrl}/api/admin/product/get-all-product`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ page: 1, limit: 1 })
             });
             const productsData = await productsRes.json();
             if (productsData.success) {
-                setCounts(prev => ({ ...prev, products: productsData.data?.length || 0 }));
+                setCounts(prev => ({ ...prev, products: productsData.totalCount || 0 }));
             }
 
             // Fetch categories count  
@@ -46,16 +47,16 @@ export default function DashboardPage() {
                 setCounts(prev => ({ ...prev, categories: categoriesData.data?.length || 0 }));
             }
 
-            // Fetch recent orders
+            // Fetch recent orders - don't send status filter to get all
             const ordersRes = await fetch(`${backendUrl}/api/admin/order/get-all`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'all' })
+                body: JSON.stringify({ page: 1, limit: 5 })
             });
             const ordersData = await ordersRes.json();
 
             if (ordersData.success) {
-                setRecentOrders(ordersData.data.slice(0, 5));
+                setRecentOrders(ordersData.data || []);
             }
         } catch (error) {
             console.error("Failed to fetch dashboard data:", error);
