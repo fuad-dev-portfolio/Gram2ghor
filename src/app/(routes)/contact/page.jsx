@@ -1,3 +1,30 @@
+export const metadata = {
+    title: "Contact Gram2Ghor | Get in Touch with Us",
+    description: "Contact Gram2Ghor for any queries about our organic food products. Reach us at Rampura, Dhaka, Bangladesh. Call us at 09642922922 or email contact@ghorerbazar.com.",
+    keywords: "contact Gram2Ghor, Gram2Ghor phone number, Gram2Ghor email, organic food contact Bangladesh, Rampura Dhaka",
+    openGraph: {
+        title: "Contact Gram2Ghor",
+        description: "Contact Gram2Ghor for any queries about our organic food products.",
+        url: "https://gram2ghor.com/contact",
+        siteName: "Gram2Ghor",
+        images: [
+            {
+                url: "/logo.png",
+                width: 800,
+                height: 600,
+                alt: "Gram2Ghor Logo"
+            }
+        ],
+        type: "website"
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Contact Gram2Ghor",
+        description: "Contact Gram2Ghor for any queries about our organic food products.",
+        images: ["/logo.png"]
+    }
+};
+
 export default function ContactPage() {
     return (
         <div className="py-12">
@@ -26,7 +53,7 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </div>
-
+                
                 <div>
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Send us a Message</h2>
                     <form className="space-y-4">
