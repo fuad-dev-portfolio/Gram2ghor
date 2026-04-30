@@ -96,25 +96,23 @@ export default function TopSelling() {
     return (
         <div className="w-full py-8 px-4">
             <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
+                <button
+                    onClick={() => scroll('left')}
+                    disabled={!canScrollLeft}
+                    className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Scroll left"
+                >
+                    <FiArrowLeft className="w-5 h-5 text-gray-700" />
+                </button>
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Top Selling</h2>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => scroll('left')}
-                        disabled={!canScrollLeft}
-                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        aria-label="Scroll left"
-                    >
-                        <FiArrowLeft className="w-5 h-5 text-gray-700" />
-                    </button>
-                    <button
-                        onClick={() => scroll('right')}
-                        disabled={!canScrollRight}
-                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        aria-label="Scroll right"
-                    >
-                        <FiArrowRight className="w-5 h-5 text-gray-700" />
-                    </button>
-                </div>
+                <button
+                    onClick={() => scroll('right')}
+                    disabled={!canScrollRight}
+                    className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Scroll right"
+                >
+                    <FiArrowRight className="w-5 h-5 text-gray-700" />
+                </button>
             </div>
 
             <div ref={containerRef} className="max-w-7xl mx-auto">
