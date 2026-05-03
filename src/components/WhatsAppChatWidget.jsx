@@ -11,7 +11,7 @@ export default function WhatsAppChatWidget() {
     const [isVisible, setIsVisible] = useState(false);
     const messagesEndRef = useRef(null);
 
-    const whatsappNumber = "01618566586";
+    const whatsappNumber = "8801618566586";
     const defaultMessage = "হ্যালো, আমি একটি পণ্য সম্পর্কে জানতে চাই।";
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function WhatsAppChatWidget() {
 
         setTimeout(() => {
             const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/88${whatsappNumber}?text=${encodedMessage}`, '_blank');
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
         }, 100);
     };
 
